@@ -28,18 +28,4 @@ async def start_analysis(
     return StartAnalyzeOutputSchema(job_id=job.uuid)
 
 
-@router.post("/function", response_model=AnalyzeFunctionResponse)
-async def function_analysis(
-        db: Session = Depends(get_db),
-        request: AnalyzeFunctionRequest = Body(...)
-):
-    job_selector = JobByUUIDRetrieval(db)
-    job = job_selector.get_job_by_uuid(request.job_id)
-    if not job:
-        raise HTTPException(status_code=404, detail="Job not found")
-    if job.status != JobStatus.DONE:
-        raise HTTPException(status_code=400, detail="Job is not ready. Status: " + job.status.value)
-    repo_path = job.local_path
-    function_code = extract_function_code(repo_path, request.function_name)
-    logger.info(function_code)
-    return AnalyzeFunctionResponse(suggestions=['suggestions'])
+
