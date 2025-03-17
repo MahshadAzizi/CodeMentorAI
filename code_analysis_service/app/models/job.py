@@ -1,13 +1,13 @@
 import enum
 
-from sqlalchemy import String, func, DateTime
+from sqlalchemy import String, func, DateTime, Enum as SqlEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID
 
 from code_analysis_service.app.config.db import Base
 
 
-class JobStatus(enum.Enum):
+class JobStatus(str, enum.Enum):
     PENDING = "PENDING"
     DOWNLOADING = "DOWNLOADING"
     DONE = "DONE"
@@ -39,6 +39,12 @@ class Job(Base):
     local_path: Mapped[str] = mapped_column(
         String(100),
         nullable=True,
+    )
+
+    status: Mapped[JobStatus] = mapped_column(
+        SqlEnum(JobStatus, name="job_status_enum"),
+        nullable=False,
+        default=JobStatus.PENDING
     )
 
     created_at = mapped_column(
